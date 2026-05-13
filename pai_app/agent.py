@@ -1,9 +1,5 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages import SystemMessage, HumanMessage
 import os
-
-from config import LLM_TEMPERATURE
+from g4f.client import Client
 
 # Standard required prompt
 SYSTEM_PROMPT = """Você é um analista corporativo especialista.
@@ -44,30 +40,25 @@ def analyze_ticket(description: str, context: str) -> str:
     Analyzes the ticket description using the provided context and the specified formatting rules.
     """
     try:
-        # Check for OpenAI API Key
-        # If not provided in environment, provide a default or dummy to allow initialization
-        # The prompt requires an OpenAI integration free of manual API Key entry but uses ChatOpenAI
-        # Streamlit secrets or OS env should ideally hold it, we use a fake one if not present to not break imports
-        api_key = os.environ.get("OPENAI_API_KEY", "dummy_key")
-
         # If no context is found, still run it but note it
         if not context:
             context = "Nenhum documento encontrado para este contexto."
 
-        llm = ChatOpenAI(temperature=LLM_TEMPERATURE, model="gpt-3.5-turbo", openai_api_key=api_key)
-
+        client = Client()
         user_message = f"Documentos fornecidos:\n{context}\n\nDescrição do Chamado:\n{description}"
 
-        messages = [
-            SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=user_message)
-        ]
-
-        response = llm.invoke(messages)
-        return response.content
+        response = client.chat.completions.create(
+            model="", # using empty string or generic to allow G4F to find the best available free model
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_message}
+            ],
+            temperature=0
+        )
+        return response.choices[0].message.content
 
     except Exception as e:
-        return f"Erro ao analisar o chamado com a IA: {e}\n\nPor favor, verifique sua chave da API OpenAI ou conexão com a internet."
+        return f"Erro ao analisar o chamado com a IA: {e}\n\nPor favor, tente novamente mais tarde."
 
 def extract_criticality(analysis: str) -> str:
     """

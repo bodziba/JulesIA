@@ -1,0 +1,8 @@
+streamlit
+langchain
+langchain-community
+chromadb
+sentence-transformers
+pypdf
+g4f
+nest_asyncio
