@@ -1,0 +1,172 @@
+/* Hide Streamlit elements */
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+.stDeployButton {display:none;}
+.stApp {
+    background-color: #f8f9fa;
+}
+
+/* Primary dark blue: #0A2540, Orange highlight: #FF6B00 */
+
+/* Global Colors */
+:root {
+    --primary-blue: #0A2540;
+    --highlight-orange: #FF6B00;
+    --bg-light: #f8f9fa;
+    --card-bg: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-blue);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Cards with shadow and rounded borders */
+.stCard, div[data-testid="stVerticalBlock"] > div > div > div > div.stMarkdown, div[data-testid="stMetric"] {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 1rem;
+}
+
+.stCard:hover, div[data-testid="stMetric"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Specific for metrics */
+div[data-testid="stMetricValue"] {
+    color: var(--primary-blue);
+    font-weight: 700;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Buttons with gradient and hover */
+button[kind="primary"], .stButton > button {
+    background: linear-gradient(135deg, var(--primary-blue), #1A406B);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+button[kind="primary"]:hover, .stButton > button:hover {
+    background: linear-gradient(135deg, #1A406B, var(--primary-blue));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    color: white;
+    border-color: transparent;
+}
+
+/* Highlight Orange Button for specific actions if needed */
+.btn-orange > button {
+    background: linear-gradient(135deg, var(--highlight-orange), #FF8533);
+}
+
+.btn-orange > button:hover {
+    background: linear-gradient(135deg, #FF8533, var(--highlight-orange));
+}
+
+/* Inputs styling */
+.stTextInput > div > div > input, .stSelectbox > div > div > div, .stTextArea > div > textarea {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem;
+    transition: border-color 0.2s ease;
+}
+
+.stTextInput > div > div > input:focus, .stSelectbox > div > div > div:focus, .stTextArea > div > textarea:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(10, 37, 64, 0.25);
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    background-color: transparent;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: white;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 20px;
+    border: 1px solid #e9ecef;
+    border-bottom: none;
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: var(--primary-blue);
+    color: white;
+}
+
+/* File Uploader */
+[data-testid="stFileUploadDropzone"] {
+    border: 2px dashed var(--primary-blue);
+    border-radius: 12px;
+    background-color: rgba(10, 37, 64, 0.02);
+    transition: all 0.2s ease;
+}
+
+[data-testid="stFileUploadDropzone"]:hover {
+    background-color: rgba(10, 37, 64, 0.05);
+    border-color: var(--highlight-orange);
+}
+
+/* Typography and utility */
+.ticket-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+    border-left: 5px solid var(--primary-blue);
+}
+
+.ticket-critical {
+    border-left: 5px solid var(--highlight-orange);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.badge {
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #495057;
+}
+
+.badge-critical {
+    background: #ffe5d0;
+    color: var(--highlight-orange);
+}
+
+.doc-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #eee;
+}
