@@ -152,7 +152,7 @@ with tab_open:
             if not f_system or not f_client or not f_desc:
                 st.error("Por favor, preencha todos os campos obrigatórios (*).")
             else:
-                with st.spinner("Processando chamado..."):
+                with st.spinner("A IA está analisando o chamado..."):
                     # 1. Index PDFs if any
                     docs_indexed = 0
                     if f_files:
@@ -195,8 +195,13 @@ with tab_open:
                     if docs_indexed > 0:
                         st.info(f"{docs_indexed} documentos foram indexados e incluídos na base de conhecimento.")
 
-                    # Refresh to update dashboard
-                    trigger_refresh()
+                # Display the analysis result after the spinner completes
+                st.markdown("### Resultado da Análise da IA")
+                st.markdown(analysis_result)
+
+                # We do not call trigger_refresh() or st.rerun() here immediately
+                # so the user has time to read the analysis.
+                # The dashboard tab will reflect the new ticket the next time it's clicked.
 
 
 # ==========================================
