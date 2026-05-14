@@ -47,6 +47,13 @@ def index_pdf(uploaded_file, metadata: Dict[str, Any]) -> int:
         # Enhance metadata
         doc_id = str(uuid.uuid4())
         enhanced_metadata = metadata.copy()
+
+        # Normalize fields to ensure case-insensitive matching later
+        if "client" in enhanced_metadata and enhanced_metadata["client"]:
+            enhanced_metadata["client"] = str(enhanced_metadata["client"]).strip().lower()
+        if "system" in enhanced_metadata and enhanced_metadata["system"]:
+            enhanced_metadata["system"] = str(enhanced_metadata["system"]).strip().lower()
+
         enhanced_metadata.update({
             "doc_id": doc_id,
             "filename": uploaded_file.name,
@@ -150,6 +157,10 @@ def get_relevant_context(query: str, system: str, client_name: str) -> str:
     try:
         vectorstore = get_vectorstore()
 
+        # Normalize inputs for case-insensitive matching
+        norm_client = str(client_name).strip().lower() if client_name else ""
+        norm_system = str(system).strip().lower() if system else ""
+
         # Construct filter based on rules
         # Rules:
         # - GLOBAL: used in any ticket
@@ -161,8 +172,8 @@ def get_relevant_context(query: str, system: str, client_name: str) -> str:
         where_filter = {
             "$or": [
                 {"scope": "GLOBAL"},
-                {"$and": [{"scope": "CLIENT"}, {"client": client_name}]},
-                {"$and": [{"scope": "SYSTEM"}, {"system": system}]}
+                {"$and": [{"scope": "CLIENT"}, {"client": norm_client}]},
+                {"$and": [{"scope": "SYSTEM"}, {"system": norm_system}]}
             ]
         }
 
