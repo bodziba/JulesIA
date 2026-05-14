@@ -1,0 +1,19 @@
+# Persistent Data and DB
+pai_app/db/
+pai_app/data/
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS generated files
+.DS_Store
+Thumbs.db
