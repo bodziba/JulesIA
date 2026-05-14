@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 
+import markdown
 from config import SCOPES, SCOPE_GLOBAL, SCOPE_SYSTEM
 from storage import get_all_tickets, add_ticket, delete_ticket, clear_all_tickets
 from rag import index_pdf, get_indexed_documents, remove_document, remove_all_documents, get_relevant_context
@@ -93,20 +94,32 @@ with tab_dash:
             badge_class = "badge-critical" if t.get("criticality") == "Alta" else ""
 
             with st.container():
+
+                # Convert Markdown to HTML to show properly inside the HTML div
+                analysis_html = markdown.markdown(t.get('analysis', 'Sem análise disponível.'))
+
+                # Escape Description text to avoid breaking HTML rendering
+                description = str(t.get('description', '')).replace('<', '&lt;').replace('>', '&gt;')
+
                 st.markdown(f"""
                 <div class="ticket-card {crit_class}">
                     <div class="ticket-header">
                         <span style="font-weight: bold; color: var(--primary-blue); font-size: 1.1em;">{t.get('type')} - {t.get('system')}</span>
                         <span class="badge {badge_class}">Criticidade: {t.get('criticality', 'Desconhecida')}</span>
                     </div>
-                    <div><strong>Cliente:</strong> {t.get('client')}</div>
-                    <div><strong>Data:</strong> {t.get('date')}</div>
-                    <div style="margin-top: 10px; color: #555;"><strong>Resumo:</strong> {t.get('description', '')[:100]}...</div>
+                    <div style="margin-bottom: 8px;"><strong>Cliente:</strong> {t.get('client')}</div>
+                    <div style="margin-bottom: 8px;"><strong>Data:</strong> {t.get('date')}</div>
+                    <div style="margin-top: 15px; margin-bottom: 20px; background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
+                        <div style="color: var(--primary-blue); font-weight: bold; margin-bottom: 5px;">Descrição:</div>
+                        <div style="color: #444; white-space: pre-wrap;">{description}</div>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <div style="color: var(--primary-blue); font-weight: bold; font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px;">Análise da IA</div>
+                        <div class="analysis-content" style="color: #333;">{analysis_html}</div>
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
-
-                with st.expander("Ver Análise da IA"):
-                    st.markdown(t.get('analysis', 'Sem análise disponível.'))
 
                 if st.button("🗑️ Excluir", key=f"del_{t.get('id')}"):
                     st.session_state[f"confirm_del_{t.get('id')}"] = True
