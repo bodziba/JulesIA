@@ -15,11 +15,21 @@ footer {visibility: hidden;}
     --highlight-orange: #FF6B00;
     --bg-light: #f8f9fa;
     --card-bg: #ffffff;
+    --text-dark: #212529;
+}
+
+body, .stApp, p, span, div {
+    color: var(--text-dark);
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: var(--primary-blue);
+    color: var(--primary-blue) !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Force label colors (input fields, selects) to be dark */
+label, .st-emotion-cache-10trblm, div[data-testid="stMarkdownContainer"] p {
+    color: var(--text-dark) !important;
 }
 
 /* Cards with shadow and rounded borders */

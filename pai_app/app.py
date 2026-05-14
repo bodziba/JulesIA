@@ -209,8 +209,16 @@ with tab_open:
                         st.info(f"{docs_indexed} documentos foram indexados e incluídos na base de conhecimento.")
 
                 # Display the analysis result after the spinner completes
-                st.markdown("### Resultado da Análise da IA")
-                st.markdown(analysis_result)
+                st.markdown("---")
+                st.markdown("### 🤖 Resultado da Análise da IA")
+                st.info("Abaixo está a análise automática gerada para o seu chamado com base nos documentos de contexto fornecidos.")
+
+                # Add a stylized container specifically for the AI response
+                st.markdown(f"""
+                <div style="background-color: #ffffff; border-left: 5px solid var(--highlight-orange); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 15px; margin-bottom: 25px;">
+                    <div style="color: #333;">{markdown.markdown(analysis_result)}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
                 # We do not call trigger_refresh() or st.rerun() here immediately
                 # so the user has time to read the analysis.
