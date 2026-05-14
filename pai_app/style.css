@@ -58,6 +58,82 @@ div[data-testid="stMetricLabel"] {
     font-weight: 500;
 }
 
+/* Metric Cards Custom Styling */
+.metric-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #f0f0f0;
+}
+
+.metric-card.critical {
+    background-color: #fdf3f3;
+}
+
+.metric-card.indexed {
+    background-color: var(--primary-blue);
+    color: white;
+}
+
+.metric-card.indexed .metric-title, .metric-card.indexed .metric-value {
+    color: white;
+}
+
+.metric-card.ai {
+    background-color: var(--highlight-orange);
+    color: white;
+}
+
+.metric-card.ai .metric-title, .metric-card.ai .metric-value {
+    color: white;
+}
+
+.metric-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.metric-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #111;
+}
+
+.metric-icon {
+    font-size: 1.5rem;
+    opacity: 0.8;
+}
+
+.delete-btn-minimal {
+    color: #999;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.delete-btn-minimal:hover {
+    color: #dc3545;
+}
+
+.btn-outline-danger {
+    color: #dc3545 !important;
+    background-color: transparent !important;
+    border: 1px solid #dc3545 !important;
+    box-shadow: none !important;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
 /* Buttons with gradient and hover */
 button[kind="primary"], .stButton > button {
     background: linear-gradient(135deg, var(--primary-blue), #1A406B);
@@ -98,6 +174,20 @@ button[kind="primary"]:hover, .stButton > button:hover {
 .stTextInput > div > div > input:focus, .stSelectbox > div > div > div:focus, .stTextArea > div > textarea:focus {
     border-color: var(--primary-blue);
     box-shadow: 0 0 0 0.2rem rgba(10, 37, 64, 0.25);
+}
+
+/* Sidebar styling */
+[data-testid="stSidebar"] {
+    background-color: var(--primary-blue) !important;
+}
+
+[data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] h1, [data-testid="stSidebar"] p {
+    color: white !important;
+}
+
+/* Fix option menu background overriding */
+.nav-link {
+    font-weight: 500 !important;
 }
 
 /* Tabs */

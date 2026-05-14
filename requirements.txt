@@ -8,3 +8,4 @@ g4f
 nest_asyncio
 torchvision
 markdown
+streamlit-option-menu

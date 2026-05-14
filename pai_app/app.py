@@ -6,6 +6,7 @@ from config import SCOPES, SCOPE_GLOBAL, SCOPE_SYSTEM
 from storage import get_all_tickets, add_ticket, delete_ticket, clear_all_tickets
 from rag import index_pdf, get_indexed_documents, remove_document, remove_all_documents, get_relevant_context
 from agent import analyze_ticket, extract_criticality
+from streamlit_option_menu import option_menu
 
 # --- Page Config ---
 st.set_page_config(
@@ -39,38 +40,58 @@ if "refresh_counter" not in st.session_state:
 def trigger_refresh():
     st.session_state.refresh_counter += 1
 
-# --- Layout: Main Title ---
-st.title("🧠 PAI — Publicenter Artificial Intelligence")
+# --- Sidebar Navigation ---
+with st.sidebar:
+    st.markdown("""
+    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+        <div style="background-color: var(--highlight-orange); border-radius: 8px; padding: 10px; margin-right: 15px;">
+            <span style="font-size: 24px;">🧠</span>
+        </div>
+        <div>
+            <div style="font-weight: bold; font-size: 20px; color: white;">PAI</div>
+            <div style="font-size: 12px; color: #aaa;">Publicenter AI</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# --- Navigation Tabs ---
-tab_dash, tab_open, tab_kb = st.tabs(["📊 Dashboard", "📝 Abrir Chamado", "📚 Base de Conhecimento"])
+    st.markdown("<hr style='border-color: rgba(255,255,255,0.1); margin-top: 0;'>", unsafe_allow_html=True)
+
+    selected = option_menu(
+        menu_title=None,
+        options=["Dashboard", "Novo Chamado", "Base de Conhecimento", "Consulta RAG"],
+        icons=["grid", "plus-circle", "book", "search"],
+        menu_icon="cast",
+        default_index=0,
+        styles={
+            "container": {"padding": "0!important", "background-color": "transparent"},
+            "icon": {"color": "white", "font-size": "16px"},
+            "nav-link": {"color": "white", "font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "rgba(255,255,255,0.1)"},
+            "nav-link-selected": {"background-color": "var(--highlight-orange)"},
+        }
+    )
+
+    st.markdown("<br><br><br><br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+        <div style="font-size: 12px; color: #aaa;">Powered by</div>
+        <div style="font-weight: bold; color: var(--highlight-orange);">Publicenter AI</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # ==========================================
-# TAB 1: DASHBOARD
+# PAGE 1: DASHBOARD
 # ==========================================
-with tab_dash:
-    st.header("Visão Geral dos Chamados")
+if selected == "Dashboard":
 
-    tickets = get_all_tickets()
-    docs = get_indexed_documents()
-
-    total_tickets = len(tickets)
-    critical_tickets = sum(1 for t in tickets if t.get("criticality") == "Alta")
-    total_docs = len(docs)
-
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total de Chamados", total_tickets)
-    col2.metric("Chamados Críticos", critical_tickets)
-    col3.metric("Documentos Indexados", total_docs)
-
-    st.markdown("---")
-
-    d_col1, d_col2 = st.columns([0.8, 0.2])
-    with d_col1:
-        st.subheader("Últimos Chamados")
-    with d_col2:
-        if st.button("🗑️ Limpar tudo", key="btn_clear_all", help="Requer confirmação", type="primary", use_container_width=True):
+    # Header Area
+    col_h1, col_h2 = st.columns([0.8, 0.2])
+    with col_h1:
+        st.markdown("<h1 style='margin-bottom: 0;'>Dashboard</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='color: #6c757d; font-size: 1.1rem;'>Visão geral dos chamados e documentos</p>", unsafe_allow_html=True)
+    with col_h2:
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("🗑️ Limpar tudo", key="btn_clear_all", help="Requer confirmação"):
             st.session_state.confirm_clear_all = True
 
     if st.session_state.get("confirm_clear_all", False):
@@ -86,42 +107,114 @@ with tab_dash:
             st.session_state.confirm_clear_all = False
             st.rerun()
 
+    tickets = get_all_tickets()
+    docs = get_indexed_documents()
+
+    total_tickets = len(tickets)
+    critical_tickets = sum(1 for t in tickets if t.get("criticality") == "Alta")
+    total_docs = len(docs)
+    total_analysis = total_tickets # Assuming 1 analysis per ticket
+
+    # 4 Metric Cards Layout
+    m1, m2, m3, m4 = st.columns(4)
+
+    with m1:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div>
+                <div class="metric-title">Total de Chamados</div>
+                <div class="metric-value">{total_tickets}</div>
+            </div>
+            <div class="metric-icon" style="color: var(--primary-blue);">🎫</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with m2:
+        st.markdown(f"""
+        <div class="metric-card critical">
+            <div>
+                <div class="metric-title" style="color: #dc3545;">Chamados Críticos</div>
+                <div class="metric-value" style="color: #dc3545;">{critical_tickets}</div>
+            </div>
+            <div class="metric-icon" style="color: #dc3545;">⚠️</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with m3:
+        st.markdown(f"""
+        <div class="metric-card indexed">
+            <div>
+                <div class="metric-title">Documentos Indexados</div>
+                <div class="metric-value">{total_docs}</div>
+            </div>
+            <div class="metric-icon">📖</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with m4:
+        st.markdown(f"""
+        <div class="metric-card ai">
+            <div>
+                <div class="metric-title">Análises IA</div>
+                <div class="metric-value">{total_analysis}</div>
+            </div>
+            <div class="metric-icon">🤖</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.subheader("Últimos Chamados")
+
     if not tickets:
         st.info("Nenhum chamado encontrado.")
     else:
-        for t in tickets:
-            crit_class = "ticket-critical" if t.get("criticality") == "Alta" else ""
-            badge_class = "badge-critical" if t.get("criticality") == "Alta" else ""
+        # Create a 3-column grid for tickets
+        cols = st.columns(3)
+        for i, t in enumerate(tickets):
+            col = cols[i % 3]
 
-            with st.container():
+            with col:
+                crit_class = "ticket-critical" if t.get("criticality") == "Alta" else ""
+                badge_class = "badge-critical" if t.get("criticality") == "Alta" else ""
 
-                # Convert Markdown to HTML to show properly inside the HTML div
+                # Convert Markdown to HTML
                 analysis_html = markdown.markdown(t.get('analysis', 'Sem análise disponível.'))
 
-                # Escape Description text to avoid breaking HTML rendering
+                # Escape Description text
                 description = str(t.get('description', '')).replace('<', '&lt;').replace('>', '&gt;')
 
                 st.markdown(f"""
-                <div class="ticket-card {crit_class}">
-                    <div class="ticket-header">
-                        <span style="font-weight: bold; color: var(--primary-blue); font-size: 1.1em;">{t.get('type')} - {t.get('system')}</span>
-                        <span class="badge {badge_class}">Criticidade: {t.get('criticality', 'Desconhecida')}</span>
+                <div class="ticket-card {crit_class}" style="padding: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <span class="badge" style="margin-right: 5px;">{t.get('type')}</span>
+                            <span class="badge {badge_class}">{t.get('criticality', 'Desconhecida')}</span>
+                        </div>
                     </div>
-                    <div style="margin-bottom: 8px;"><strong>Cliente:</strong> {t.get('client')}</div>
-                    <div style="margin-bottom: 8px;"><strong>Data:</strong> {t.get('date')}</div>
-                    <div style="margin-top: 15px; margin-bottom: 20px; background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
-                        <div style="color: var(--primary-blue); font-weight: bold; margin-bottom: 5px;">Descrição:</div>
-                        <div style="color: #444; white-space: pre-wrap;">{description}</div>
+                    <div style="font-weight: bold; font-size: 1.1em; color: var(--text-dark); margin-bottom: 10px;">
+                        {t.get('system')}
                     </div>
-
-                    <div style="margin-top: 10px;">
-                        <div style="color: var(--primary-blue); font-weight: bold; font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px;">Análise da IA</div>
-                        <div class="analysis-content" style="color: #333;">{analysis_html}</div>
+                    <div style="color: #666; font-size: 0.9em; margin-bottom: 15px; height: 60px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                        {description}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #999; border-top: 1px solid #eee; padding-top: 10px;">
+                        <span>{t.get('client')}</span>
+                        <span>📅 {t.get('date').split(' ')[0]}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                if st.button("🗑️ Excluir", key=f"del_{t.get('id')}"):
+                # Expandable analysis
+                with st.expander("Ver Descrição Completa e Análise"):
+                    st.markdown(f"**Cliente:** {t.get('client')}")
+                    st.markdown(f"**Data:** {t.get('date')}")
+                    st.markdown(f"**Descrição:**\n\n{description}")
+                    st.markdown("---")
+                    st.markdown("### Análise da IA")
+                    st.markdown(t.get('analysis', 'Sem análise disponível.'))
+
+                # Delete button under the card
+                if st.button("🗑️ Excluir", key=f"del_{t.get('id')}", use_container_width=True):
                     st.session_state[f"confirm_del_{t.get('id')}"] = True
 
                 if st.session_state.get(f"confirm_del_{t.get('id')}", False):
@@ -130,19 +223,19 @@ with tab_dash:
                     if c1.button("Sim", key=f"yes_{t.get('id')}"):
                         delete_ticket(t.get('id'))
                         st.session_state[f"confirm_del_{t.get('id')}"] = False
-                        st.success("Excluído!")
                         trigger_refresh()
                         st.rerun()
                     if c2.button("Não", key=f"no_{t.get('id')}"):
                         st.session_state[f"confirm_del_{t.get('id')}"] = False
                         st.rerun()
+
             st.write("") # spacing
 
 
 # ==========================================
-# TAB 2: ABERTURA DE CHAMADO
+# PAGE 2: ABERTURA DE CHAMADO
 # ==========================================
-with tab_open:
+elif selected == "Novo Chamado":
     st.header("Novo Chamado Corporativo")
 
     with st.form("new_ticket_form"):
@@ -226,9 +319,9 @@ with tab_open:
 
 
 # ==========================================
-# TAB 3: BASE DE CONHECIMENTO (RAG)
+# PAGE 3: BASE DE CONHECIMENTO (RAG)
 # ==========================================
-with tab_kb:
+elif selected == "Base de Conhecimento":
     st.header("Documentos Indexados (RAG)")
 
     # Upload new standalone documents
@@ -331,3 +424,40 @@ with tab_kb:
                 with col_meta:
                     with st.expander("Ver Metadados"):
                         st.json(doc.get('metadata', {}))
+
+
+# ==========================================
+# PAGE 4: CONSULTA RAG (INTERACTIVE)
+# ==========================================
+elif selected == "Consulta RAG":
+    st.header("🔍 Consulta à Base de Conhecimento (RAG)")
+    st.markdown("Faça buscas diretas na base de documentos indexados no ChromaDB.")
+
+    with st.form("rag_query_form"):
+        col_s1, col_s2 = st.columns(2)
+        with col_s1:
+            q_system = st.text_input("Filtrar por Sistema (Opcional)")
+        with col_s2:
+            q_client = st.text_input("Filtrar por Cliente (Opcional)")
+
+        q_query = st.text_input("Sua pergunta ou termo de busca *")
+
+        q_submit = st.form_submit_button("Pesquisar", type="primary")
+
+        if q_submit:
+            if not q_query:
+                st.error("Por favor, informe um termo para busca.")
+            else:
+                with st.spinner("Buscando no banco de dados vetorial..."):
+                    context = get_relevant_context(q_query, q_system, q_client)
+
+                    if not context:
+                        st.warning("Nenhum documento relevante encontrado para os critérios e filtros informados.")
+                    else:
+                        st.success("Busca concluída!")
+                        st.markdown("### Contexto Recuperado")
+                        st.markdown(f"""
+                        <div style="background-color: white; border: 1px solid #ddd; padding: 20px; border-radius: 8px; max-height: 500px; overflow-y: auto;">
+                            {markdown.markdown(context)}
+                        </div>
+                        """, unsafe_allow_html=True)
